@@ -1,0 +1,16 @@
+{
+  "name": "Layers2D Knockout Binding",
+  "id": "ko-layers2d",
+  "version": "0.0.1",
+  "description": "Prototype for Knockout.js binding extension for 2d canvas context",
+  "keywords": [],
+  "author": "Sam Foster <sfoster@mozilla.com>",
+  "volo": {
+    "baseUrl": "js/vendor",
+    "amd": {},
+    "dependencies": {
+      "requirejs": "github:jrburke/requirejs/2.0.5",
+      "knockout": "https://github.com/downloads/SteveSanderson/knockout/knockout-2.1.0.debug.js"
+    }
+  }
+}
