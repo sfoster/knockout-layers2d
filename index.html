@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Knockout-layers2d by sfoster</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Knockout-layers2d</h1>
+        <p>A knockout.js binding for 2d canvas context, to render an array of layers - each a series of instructions for the context</p>
+
+        <p class="view"><a href="https://github.com/sfoster/knockout-layers2d">View the Project on GitHub <small>sfoster/knockout-layers2d</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/sfoster/knockout-layers2d/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sfoster/knockout-layers2d/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sfoster/knockout-layers2d">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>knockout-layers2d</h3>
+
+<h2>Demo</h2>
+
+<p><a href="./layers2d.html">layers2d.html</a> shows the binding in action, with a stack of independently managed layers being rendered in sequence.</p>
+
+<h2>Status</h2>
+
+<p>This is a quick proof of concept. I was curious what data-binding for the canvas element might look like. The procedural nature of canvas makes it quite well suited to a simple list of instructions. Performance-wise, knockout adds a lot of fluff if you are just interested in rendering things fast. But, if you are already using knockout elsewhere on the page, maybe the convenience of this approach would tip the balance. </p>
+
+<h2>TODOs</h2>
+
+<p>The getContext('2d') is relatively expensive- we dont' want to call that each tick. So I've stuck it on the viewModel value for now, but that's not right either. Maybe the init step for the binding can be used to stash it somewhere nice. </p>
+
+<p>I've used array iteractors ([].forEach) with no affordance for older browsers. As we also expect the canvas element to exist, I'm not too stressed about this. I'm using AMD (via require.js) to load the dependencies and the image assets. That's orthogonal to the actual knockout binding implementation itself, and could be refactored to use an UMD (optional AMD) pattern perhaps.</p>
+
+<p>For the demo, it would be nice to scroll the background while we walk. It would be easy to add keyboard left/right control. Maybe jump. That's all besides the point, don't encourage me. </p>
+
+<p>There's a ton of refactoring could take place in the demo. I'm already reusing arrays by using splice to update values. Maybe a pool of objects would help smooth out garbage collection too. </p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/sfoster">sfoster</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
