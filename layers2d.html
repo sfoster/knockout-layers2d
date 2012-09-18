@@ -25,8 +25,22 @@
   <script src="js/vendor/requirejs.js" type="text/javascript" charset="utf-8"></script>
   <script src="js/config.js" type="text/javascript" charset="utf-8"></script>
   <script>
-    require(['knockout', 'knockout.layers2d', 'image!img/rpg_sprite_walk.png', 'image!img/desert_BG.png'], function(ko, koExt, spriteSheet, bgImage){
+    require(['knockout', 'knockout.layers2d', 'image!img/rpg_sprite_walk.png', 'image!img/desert_layers.png', 'image!img/player_ship.png'], function(ko, koExt, spriteSheet, bgImage, spaceshipImage){
       
+      function moveInStack(array, thing, toIndex) {
+          var placeholder = {}, 
+              sourceIndex = array.indexOf(thing);
+          if(sourceIndex < 0) return;
+          // remove the object from its initial position and
+          // plant the placeholder object in its place to
+          // keep the array length constant
+          array.splice(sourceIndex, 1, placeholder);
+          // place the object in the desired position
+          array.splice(toIndex, 0, thing);
+          // take out the temporary object
+          array.splice(array.indexOf(placeholder), 1);
+      }
+
       var layers = []; 
       var tile = {x: 0, y: 0 },
           startX = 1, startY = 4, 
@@ -43,7 +57,7 @@
         { call: 'fillText', value: [ "text fill", 1, 3 ] }
       ];
       
-      function updateWalk(ar, x,y,frame, series){
+      function move(ar, x,y,frame, series){
         // in-place updates to the params array
         //                        sx,       sy,        sw, sh, dx, dy, dWidth, dHeight)
         ar.splice(1, ar.length-1, 24*frame, 32*series, 24, 32, x,  y,   24, 32);
@@ -52,17 +66,25 @@
       
       var walkParams = [spriteSheet];
       var walkLayer = [
-        { call: 'drawImage', value: updateWalk(walkParams, 0, 0, 0) }
+        { call: 'drawImage', value: move(walkParams, 0, 0, 0) }
       ];
-      var bgLayer = [
-        { call: 'drawImage', value: [bgImage, 0, 0, 800, 400] }
+      var ship = { call: 'drawImage', value: [spaceshipImage, 0, 0, 64, 32, 0, 120, 32, 16] }, 
+          shipLayer = [ship]; // spaceship
+      
+      var background = [
+        [{ call: 'drawImage', value: [bgImage, 0, 400, 400, 400, 0, 0, 400, 400] }], // sky
+        [{ call: 'drawImage', value: [bgImage, 0, 800, 400, 400, 0, 0, 400, 400] }], // clouds
+        [{ call: 'drawImage', value: [bgImage, 0, 0,   400, 400, 0, 0, 400, 400] }] // landscape
       ];
       
       
       layers.push(start);
-      layers.push(bgLayer);
+      layers.push.apply(layers, background);
       layers.push(walkLayer);
       layers.push(text1);
+
+      var shipDepth = 2;
+      layers.splice(shipDepth, 0, shipLayer);
       
       var viewModel = {
         loaded: ko.observable("Loading"),
@@ -75,7 +97,7 @@
           walk_y = 310+box.t, 
           walk_frame = 0, 
           walk_dir=1;
-      var speed = 1/10;
+      var speed = 1/500;
       var lastTick = Date.now();
       var lastFrame = lastTick;
       
@@ -91,19 +113,28 @@
           // which row in the sprite sheet to use?
           walk_series = walk_dir > 0 ? 3 : 2;
           // update the values to render the correct slice of the sprite sheet at the right position
-          walkLayer.splice(0, 1, { call: 'drawImage', value: updateWalk(walkParams, walk_x, walk_y, walk_frame, walk_series) });
+          walkLayer.splice(0, 1, { call: 'drawImage', value: move(walkParams, walk_x, walk_y, walk_frame, walk_series) });
           // move along a bit
           walk_x += 3 * walk_dir;
           // turn around when we get to the edge
           if(walk_x+24 > box.r){
-            walk_dir *= -1;  
+            walk_dir *= -1;
           }
           if(walk_x < 0){
             walk_dir *= -1;  
+            // and move the ship
+            shipDepth = shipDepth >= layers.length ? 2 : shipDepth+1;
           }
           // cycle through the frames in the animation
           walk_frame = (walk_frame >= 7) ? 0 : walk_frame+1;
           lastFrame = now;
+          
+          // lets have the ship follow the character
+          ship.value[1] = 64*(walk_dir > 0 ? 0 : 1);
+          ship.value[5] = walk_x;
+          ship.value[7] = 64 * 1/(layers.length+1-shipDepth);
+          ship.value[8] = 32 * 1/(layers.length+1-shipDepth);
+          moveInStack(layers, shipLayer,  shipDepth);
         }
         lastTick = now;
         // tell knockout to re-apply the binding as the values it has rendered are old
@@ -112,5 +143,12 @@
       
     });
   </script>
+  <hr/>
+  <h3>Graphics credits</h3>
+  <ul>
+    <li><a href="http://opengameart.org/content/several-scrolling-backgrounds-and-layerable-runners">Landscape background</a></li>
+    <li><a href="http://opengameart.org/content/2d-rpg-character-walk-spritesheet">RPG character</a></li>
+    <li><a href="http://opengameart.org/content/spaceship-side-scrolling-shooter">Spaceship</a></li>
+  </ul>
 </body>
 </html>
