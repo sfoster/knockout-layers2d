@@ -97,7 +97,7 @@
           walk_y = 310+box.t, 
           walk_frame = 0, 
           walk_dir=1;
-      var speed = 1/500;
+      var speed = 1/24;
       var lastTick = Date.now();
       var lastFrame = lastTick;
       
@@ -135,10 +135,11 @@
           ship.value[7] = 64 * 1/(layers.length+1-shipDepth);
           ship.value[8] = 32 * 1/(layers.length+1-shipDepth);
           moveInStack(layers, shipLayer,  shipDepth);
+
+          // tell knockout to re-apply the binding as the values it has rendered are old
+          viewModel.layers.valueHasMutated();
         }
         lastTick = now;
-        // tell knockout to re-apply the binding as the values it has rendered are old
-        viewModel.layers.valueHasMutated();
       }, 1000/30);
       
     });
